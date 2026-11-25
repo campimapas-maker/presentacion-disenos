@@ -16,7 +16,7 @@ const on = (sel, ev, fn) => {
 };
 // Número de versión, visible en Ajustes. Subilo junto con el CACHE de sw.js al publicar:
 // sirve para saber de un vistazo si el navegador está corriendo la versión nueva o una vieja.
-const APP_VER = 'v16';
+const APP_VER = 'v17';
 const FACT = { mm: 1, cm: 10, m: 1000, in: 25.4 };     // unidad del archivo → mm
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nf = (n, d = 0) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -773,7 +773,7 @@ function prepareMaterials(root, ext) {
     m.receiveShadow = true;
     m.userData.mats = list.map((mat) => ({ mat, color: mat.color.clone(), opacity: mat.opacity, transparent: mat.transparent, depthWrite: mat.depthWrite }));
 
-    const lineGeo = new THREE.LineSegmentsGeometry().setPositions(buildEdges(m.geometry, 25).attributes.position.array);
+    const lineGeo = new THREE.LineSegmentsGeometry().setPositions(buildEdges(m.geometry, 25, unaCara).attributes.position.array);
     // Sobre melamina blanca la línea del borde es lo único que separa una puerta de la de al
     // lado, sobre todo en el celular, donde el cálculo de rincones arranca apagado. Antes era
     // tan suave que el mueble parecía una plancha sola.
@@ -790,7 +790,7 @@ function prepareMaterials(root, ext) {
 
 // Como THREE.EdgesGeometry, pero ignora las caras "de atrás" que exporta SketchUp: la cara
 // delantera y la trasera comparten la diagonal de cada rectángulo y aparecía como una arista.
-function buildEdges(geo, thresholdDeg) {
+function buildEdges(geo, thresholdDeg, dobles) {
   const pos = geo.attributes.position, index = geo.index;
   const count = index ? index.count : pos.count;
   const vi = (i) => (index ? index.getX(i) : i);
@@ -813,12 +813,29 @@ function buildEdges(geo, thresholdDeg) {
   }
   const cosThr = Math.cos((thresholdDeg * Math.PI) / 180);
   const out = [];
+  /* Con la exportación de doble cara, cada triángulo viene repetido al revés, así que las
+     normales de un borde llegan de a pares opuestos. Juntándolas por dirección se puede volver a
+     contar cuántas caras de verdad se tocan ahí:
+       · una sola dirección y dos triángulos  → es el borde del panel  → se dibuja
+       · una sola dirección y cuatro          → es la diagonal con que se parte la cara → no
+       · dos direcciones                      → dos caras en ángulo → se dibuja si abre bastante
+     Sin esto, un frente plano se quedaba sin contorno y dos puertas blancas pegadas parecían una
+     sola plancha. */
   edges.forEach((e) => {
-    let draw = e.normals.length === 1;
-    for (let x = 0; x < e.normals.length && !draw; x++) {
-      for (let y = x + 1; y < e.normals.length; y++) {
-        const d = e.normals[x].dot(e.normals[y]);
-        if (d < cosThr && d > -0.9998) { draw = true; break; }
+    let draw;
+    if (dobles) {
+      const dirs = [];
+      e.normals.forEach((n) => { if (!dirs.some((d) => Math.abs(d.dot(n)) > 0.9998)) dirs.push(n); });
+      draw = dirs.length === 1
+        ? e.normals.length <= 2
+        : dirs.some((a, x) => dirs.slice(x + 1).some((b) => Math.abs(a.dot(b)) < cosThr));
+    } else {
+      draw = e.normals.length === 1;
+      for (let x = 0; x < e.normals.length && !draw; x++) {
+        for (let y = x + 1; y < e.normals.length; y++) {
+          const d = e.normals[x].dot(e.normals[y]);
+          if (d < cosThr && d > -0.9998) { draw = true; break; }
+        }
       }
     }
     if (draw) out.push(e.p.x, e.p.y, e.p.z, e.q.x, e.q.y, e.q.z);

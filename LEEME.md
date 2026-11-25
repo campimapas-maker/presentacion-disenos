@@ -143,9 +143,9 @@ El visor no dibuja el modelo plano como SketchUp: lo ilumina como un render.
   reciben relieve sacado de la propia imagen, así la veta se ve con profundidad y no como una
   calcomanía. La **melamina blanca lisa** lleva más poro que el resto: es el caso donde la luz
   pega más pareja, y sin eso dos puertas pegadas parecen una sola plancha.
-- **Líneas de los bordes:** sobre blanco son lo único que separa una puerta de la de al lado,
-  sobre todo en el celular, donde el cálculo de rincones arranca apagado. Se pueden apagar con el
-  botón **Líneas**.
+- **Líneas de los bordes:** sobre blanco son lo único que separa una puerta de la de al lado —
+  dos frentes en el mismo plano reciben exactamente la misma luz, así que sin contorno se ven
+  como una sola plancha. Cada panel lleva el suyo. Se pueden apagar con el botón **Líneas**.
 - **Curva de exposición** de cámara de fotos: los blancos no se queman.
 
 **Si un material se ve de un color raro, el color sale del material en SketchUp, no de la luz.** El
