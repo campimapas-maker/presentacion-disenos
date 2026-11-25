@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Presentación de Diseños</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="description" content="Visor 3D de cocinas, placares y vanitorys con medidas.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Diseños">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="logo" aria-hidden="true"></span>
+    <div class="titles">
+      <strong id="hdrName">Presentación de Diseños</strong>
+      <span id="hdrClient"></span>
+    </div>
+  </div>
+  <div class="top-admin">
+    <select id="projSel" aria-label="Propuesta"></select>
+    <button id="btnNew" class="primary">+ Nueva propuesta</button>
+    <button id="btnShare">Link para el cliente</button>
+    <button id="btnSettings" title="Ajustes de la propuesta">Ajustes</button>
+    <button id="btnInstalar" title="Dejar la aplicación en este teléfono o computadora" hidden>Instalar la app</button>
+  </div>
+  <button id="btnPanel" class="only-narrow" aria-label="Medidas">Medidas</button>
+</header>
+
+<main id="app">
+  <section id="stage">
+    <div id="viewer"></div>
+
+    <div class="tools tools-views" role="group" aria-label="Vistas">
+      <button data-view="iso" class="on" title="Perspectiva (3D)">3D</button>
+      <button data-view="front" title="Vista de frente">Frente</button>
+      <button data-view="left" title="Vista desde la izquierda">Izq</button>
+      <button data-view="right" title="Vista desde la derecha">Der</button>
+      <button data-view="top" title="Vista desde arriba">Planta</button>
+      <button data-view="back" title="Vista de atrás">Atrás</button>
+      <span class="sep"></span>
+      <button id="btnFit" title="Encuadrar el mueble">Encuadrar</button>
+      <button id="btnOrtho" title="Sin perspectiva (para medir)">Ortogonal</button>
+    </div>
+
+    <div class="tools tools-opts" role="group" aria-label="Opciones de vista">
+      <button id="btnCotas" class="on" title="Mostrar u ocultar las cotas">Cotas</button>
+      <button id="btnCotasMenu" class="icon" title="Elegir qué cotas se ven" hidden>▾</button>
+      <button id="btnReal" class="on" title="Luz de estudio, sombras en los rincones y brillo de los materiales">Realista</button>
+      <button id="btnLines" class="on" title="Líneas de los bordes">Líneas</button>
+      <button id="btnShadow" class="on" title="Sombra en el piso">Sombra</button>
+      <button id="btnPuertas" title="Abrir o cerrar todas las puertas y cajones" hidden>Abrir</button>
+      <button id="btnMeasure" title="Medir entre dos puntos del mueble">Medir</button>
+      <button id="btnShot" title="Guardar la vista como imagen">Foto</button>
+      <button id="btnFull" title="Pantalla completa">⛶</button>
+    </div>
+
+    <div id="cotasMenu" class="popover" hidden></div>
+    <div id="puertaMenu" class="popover admin-only" hidden></div>
+
+    <div id="measureHint" hidden>Tocá dos puntos del mueble para medir. <button id="btnMeasureClear">Borrar medidas</button></div>
+
+    <div id="emptyMsg">
+      <h2>Presentación de Diseños</h2>
+      <p>Visor 3D de cocinas, placares y vanitorys, con las cotas puestas en SketchUp.</p>
+      <p class="admin-only"><button id="btnNew2" class="primary">+ Nueva propuesta</button></p>
+      <p class="hint admin-only">En SketchUp: <b>Enviar a Presentación de Diseños</b>. O cargá acá el <b>.dae</b> con las imágenes de su carpeta de texturas y el <b>cotas.json</b>.</p>
+      <p class="hint admin-only">O arrastrá acá la carpeta que exportó SketchUp.</p>
+      <p class="hint client-only" hidden>No se encontró la propuesta. Pedile el link otra vez a quien te lo mandó.</p>
+    </div>
+    <div id="loading" hidden><span class="spin"></span><span id="loadingTxt">Cargando el diseño…</span></div>
+  </section>
+
+  <aside id="panel">
+    <div class="panel-head">
+      <h2>Medidas</h2>
+      <button id="btnPanelClose" class="icon only-narrow" aria-label="Cerrar">✕</button>
+    </div>
+    <div id="totals"></div>
+    <div id="notes"></div>
+    <div class="panel-tabs">
+      <button class="tab on" data-pane="cotas">Cotas</button>
+      <button class="tab" data-pane="mods">Módulos</button>
+      <button class="tab" data-pane="mats">Materiales</button>
+    </div>
+    <div class="pane" id="paneCotas"></div>
+    <div class="pane" id="paneMods" hidden></div>
+    <div class="pane" id="paneMats" hidden></div>
+  </aside>
+</main>
+
+<dialog id="dlgNew">
+  <form id="formNew">
+    <h2>Nueva propuesta</h2>
+    <label>Nombre del trabajo
+      <input type="text" id="newName" required placeholder="Ej: Cocina Pérez">
+    </label>
+    <label>Cliente (opcional)
+      <input type="text" id="newClient" placeholder="Ej: Familia Pérez — Lote 284">
+    </label>
+    <p class="atajo">
+      <label class="fakebtn primary">Elegir la carpeta entera
+        <input type="file" id="newFolder" webkitdirectory directory class="oculto">
+      </label>
+      <span class="hint">Lo más rápido si exportaste con el plugin: toma el modelo, las texturas y las cotas de una. También podés arrastrarla sobre el visor.</span>
+    </p>
+    <p class="separador"><span>o cargá los archivos uno por uno</span></p>
+
+    <label>Modelo exportado de SketchUp
+      <input type="file" id="newModel" accept=".dae,.obj,.glb,.gltf">
+    </label>
+    <label>Texturas (opcional)
+      <input type="file" id="newTex" accept="image/*,.tga" multiple>
+      <span class="hint">Las imágenes que quedaron junto al .dae (seleccionalas todas).</span>
+    </label>
+    <label>Cotas (opcional)
+      <input type="file" id="newJson" accept=".json,application/json">
+      <span class="hint">El <b>cotas.json</b> de la misma carpeta.</span>
+    </label>
+    <p class="hint" id="newFilesInfo"></p>
+    <label>Notas para el cliente (opcional)
+      <textarea id="newNotes" rows="3" placeholder="Ej: Melamina Blanco Mate, mesada granito negro, herrajes Blum."></textarea>
+    </label>
+    <label>Unidad de los números del archivo
+      <select id="newUnit">
+        <option value="auto">Automática (.dae/.glb = metros, .obj = mm)</option>
+        <option value="mm">Milímetros</option>
+        <option value="cm">Centímetros</option>
+        <option value="m">Metros</option>
+        <option value="in">Pulgadas</option>
+      </select>
+    </label>
+    <p class="hint" id="newMsg"></p>
+    <div class="dlg-btns">
+      <button type="button" id="newCancel">Cancelar</button>
+      <button type="submit" class="primary">Abrir</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgSettings">
+  <form id="formSettings">
+    <h2>Ajustes de la propuesta</h2>
+    <label>Nombre
+      <input type="text" id="setName" required>
+    </label>
+    <label>Cliente
+      <input type="text" id="setClient">
+    </label>
+    <label>Notas para el cliente
+      <textarea id="setNotes" rows="3"></textarea>
+    </label>
+    <label>Unidad de los números del archivo
+      <select id="setUnit">
+        <option value="auto">Automática</option>
+        <option value="mm">Milímetros</option>
+        <option value="cm">Centímetros</option>
+        <option value="m">Metros</option>
+        <option value="in">Pulgadas</option>
+      </select>
+    </label>
+    <label>Cómo se escriben las medidas
+      <select id="setFmt">
+        <option value="mm">Milímetros (2400)</option>
+        <option value="cm">Centímetros (240)</option>
+        <option value="m">Metros (2,40)</option>
+        <option value="sketchup">Como en SketchUp</option>
+      </select>
+    </label>
+    <label>Agregar archivos (texturas o cotas.json)
+      <input type="file" id="setFiles" multiple accept=".json,image/*,.tga">
+      <span class="hint" id="setFilesInfo"></span>
+    </label>
+    <p class="hint">
+      <button type="button" id="btnArchivo">Guardar archivo para el cliente</button><br>
+      Un <b>.html</b> con todo adentro, para mandar por WhatsApp cuando el cliente no puede abrir
+      el link (sin internet, o la empresa le bloquea páginas).
+    </p>
+    <p class="hint" id="setVer"></p>
+    <div class="dlg-btns">
+      <button type="button" id="btnDelete" class="danger">Eliminar propuesta</button>
+      <button type="button" id="setCancel">Cancelar</button>
+      <button type="submit" class="primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgShare">
+  <h2 id="shareTitulo">Link para el cliente</h2>
+
+  <div id="shareOk">
+    <p class="hint" id="shareMsg"></p>
+    <input type="text" id="shareUrl" readonly>
+    <div class="dlg-btns">
+      <button type="button" id="shareCopy" class="primary">Copiar link</button>
+      <button type="button" id="shareWa">Enviar por WhatsApp</button>
+      <button type="button" id="shareClose">Cerrar</button>
+    </div>
+  </div>
+
+  <div id="shareFalta" hidden>
+    <p id="shareFaltaMsg"></p>
+    <p class="hint">Casi siempre es la conexión. Probá de nuevo; si sigue igual, mandale el
+      archivo: muestra lo mismo, pero se manda como archivo en vez de como link.</p>
+    <div class="dlg-btns">
+      <button type="button" id="shareReintentar" class="primary">Probar de nuevo</button>
+      <button type="button" id="shareArchivo">Mandar el archivo</button>
+      <button type="button" id="shareClose2">Cerrar</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast" hidden></div>
+
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/OrbitControls.js"></script>
+<script src="vendor/LineSegmentsGeometry.js"></script>
+<script src="vendor/LineMaterial.js"></script>
+<script src="vendor/LineSegments2.js"></script>
+<script src="vendor/TGALoader.js"></script>
+<script src="vendor/ColladaLoader.js"></script>
+<script src="vendor/OBJLoader.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
+<script src="vendor/SimplexNoise.js"></script>
+<script src="vendor/CopyShader.js"></script>
+<script src="vendor/SSAOShader.js"></script>
+<script src="vendor/EffectComposer.js"></script>
+<script src="vendor/RenderPass.js"></script>
+<script src="vendor/ShaderPass.js"></script>
+<script src="vendor/MaskPass.js"></script>
+<script src="vendor/SSAOPass.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

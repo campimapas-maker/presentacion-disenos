@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1408 820" width="1408" height="820" font-family="Arial, Helvetica, sans-serif">
+<defs>
+  <marker id="aK" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8 z" fill="#232323"/></marker>
+  <marker id="aG" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="6" refX="8.5" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 z" fill="#0f8a38"/></marker>
+  <marker id="aGs" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="6" refX="0.5" refY="3" orient="auto"><path d="M9,0 L0,3 L9,6 z" fill="#0f8a38"/></marker>
+  <marker id="aR" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="6" refX="8.5" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 z" fill="#c81414"/></marker>
+  <marker id="aRs" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="6" refX="0.5" refY="3" orient="auto"><path d="M9,0 L0,3 L9,6 z" fill="#c81414"/></marker>
+</defs>
+
+<rect x="0" y="0" width="1408" height="820" fill="#F2F0D8"/>
+<rect x="10" y="10" width="1388" height="800" fill="none" stroke="#8d8b70" stroke-width="2"/>
+<rect x="18" y="18" width="1372" height="784" fill="none" stroke="#b3b196" stroke-width="1"/>
+
+<!-- ================= TITULO ================= -->
+<text x="704" y="62" text-anchor="middle" font-size="36" font-weight="bold" fill="#1d1d1d" letter-spacing="1">ESQUEMA DE MONTAJE DE CAJONERAS</text>
+<line x1="330" y1="78" x2="1078" y2="78" stroke="#1d1d1d" stroke-width="2"/>
+
+<!-- ================= DETALLE 30mm (inset) ================= -->
+<g>
+  <rect x="58" y="112" width="252" height="200" rx="8" fill="#EAE8D0" stroke="#5c5a48" stroke-width="1.6"/>
+  <text x="70" y="136" font-size="14.5" font-weight="bold" fill="#1d1d1d">DETALLE · 30 mm hacia adentro</text>
+  <line x1="70" y1="144" x2="298" y2="144" stroke="#9a9880" stroke-width="1"/>
+  <rect x="98" y="160" width="14" height="112" fill="#D8D6BC" stroke="#333" stroke-width="1.4"/>
+  <text x="88" y="216" text-anchor="middle" font-size="11.5" fill="#444" transform="rotate(-90 88 216)">frente</text>
+  <rect x="162" y="190" width="134" height="15" fill="#B7BBC2" stroke="#333" stroke-width="1.3"/>
+  <rect x="163" y="191" width="132" height="5" fill="#CFD3D8" stroke="none"/>
+  <circle cx="196" cy="197.5" r="3" fill="#F2F0D8" stroke="#333" stroke-width="1"/>
+  <circle cx="262" cy="197.5" r="3" fill="#F2F0D8" stroke="#333" stroke-width="1"/>
+  <line x1="112" y1="205" x2="112" y2="248" stroke="#0f8a38" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="162" y1="205" x2="162" y2="248" stroke="#0f8a38" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="112" y1="240" x2="162" y2="240" stroke="#0f8a38" stroke-width="1.6" marker-start="url(#aGs)" marker-end="url(#aG)"/>
+  <text x="190" y="268" text-anchor="middle" font-size="18" font-weight="bold" fill="#0f8a38">30 mm</text>
+  <text x="185" y="292" text-anchor="middle" font-size="12" fill="#0f8a38">tanto la de 500 como la de 400</text>
+</g>
+
+<!-- ================= MUEBLE: base y lateral ================= -->
+<polygon points="300,690 690,690 950,508 560,508" fill="#D8D6BC" stroke="#3a3a3a" stroke-width="1.6"/>
+<line x1="300" y1="690" x2="690" y2="690" stroke="#2b2b2b" stroke-width="2.4"/>
+<polygon points="690,690 981,486 981,246 690,450" fill="#E4E2C8" stroke="#2b2b2b" stroke-width="2"/>
+<polygon points="981,486 993,478 993,238 981,246" fill="#CFCDB3" stroke="#2b2b2b" stroke-width="1.4"/>
+<line x1="690" y1="450" x2="690" y2="690" stroke="#2b2b2b" stroke-width="2.6"/>
+
+<!-- ============ CORREDERA 3 (500, superior) ============ -->
+<polygon points="706,478 966,296 966,307 706,489" fill="#B7BBC2" stroke="#2b2b2b" stroke-width="1.4"/>
+<polygon points="707,479 965,298 965,301 707,482" fill="#D2D6DB" stroke="none"/>
+<circle cx="742" cy="458" r="3.6" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1.1"/>
+<circle cx="902" cy="346" r="3.6" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1.1"/>
+<line x1="748" y1="454" x2="896" y2="350" stroke="#0f8a38" stroke-width="1.4" marker-start="url(#aGs)" marker-end="url(#aG)"/>
+<text x="716" y="470" font-size="17.5" font-weight="bold" fill="#1d1d1d" transform="rotate(-35 716 470)">Corredera de 500</text>
+<line x1="690" y1="494.7" x2="706" y2="483.5" stroke="#0f8a38" stroke-width="1.8" marker-start="url(#aGs)" marker-end="url(#aG)"/>
+<text x="634" y="500" font-size="15" font-weight="bold" fill="#0f8a38">30</text>
+
+<!-- ============ CORREDERA 2 (400, intermedia) ============ -->
+<polygon points="706,560 914,415 914,426 706,571" fill="#B7BBC2" stroke="#2b2b2b" stroke-width="1.4"/>
+<polygon points="707,561 913,417 913,420 707,564" fill="#D2D6DB" stroke="none"/>
+<circle cx="737" cy="544" r="3.6" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1.1"/>
+<circle cx="868" cy="452" r="3.6" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1.1"/>
+<line x1="743" y1="540" x2="862" y2="456" stroke="#0f8a38" stroke-width="1.4" marker-start="url(#aGs)" marker-end="url(#aG)"/>
+<text x="716" y="552" font-size="17.5" font-weight="bold" fill="#1d1d1d" transform="rotate(-35 716 552)">Corredera de 400</text>
+<line x1="690" y1="577.2" x2="706" y2="566" stroke="#0f8a38" stroke-width="1.8" marker-start="url(#aGs)" marker-end="url(#aG)"/>
+<text x="634" y="582" font-size="15" font-weight="bold" fill="#0f8a38">30</text>
+
+<!-- ============ CORREDERA 1 (primer cajon) ============ -->
+<polygon points="706,643 966,461 966,472 706,654" fill="#B7BBC2" stroke="#2b2b2b" stroke-width="1.4"/>
+<polygon points="707,644 965,463 965,466 707,647" fill="#D2D6DB" stroke="none"/>
+<circle cx="742" cy="623" r="3.6" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1.1"/>
+<circle cx="902" cy="511" r="3.6" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1.1"/>
+<text x="716" y="636" font-size="17" font-weight="bold" fill="#c81414" transform="rotate(-35 716 636)">Corredera del 1er cajón</text>
+
+<!-- cota 55mm: base interior del mueble -> centro del agujereado -->
+<line x1="706" y1="648.5" x2="690" y2="659.8" stroke="#c81414" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line x1="690" y1="659.8" x2="646" y2="659.8" stroke="#c81414" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="690" y1="690" x2="646" y2="690" stroke="#c81414" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="662" y1="690" x2="662" y2="659.8" stroke="#c81414" stroke-width="2" marker-start="url(#aRs)" marker-end="url(#aR)"/>
+<path d="M662,676 L606,702" stroke="#c81414" stroke-width="1.2" fill="none"/>
+<text x="600" y="724" text-anchor="end" font-size="30" font-weight="bold" fill="#c81414">55 mm</text>
+<text x="600" y="744" text-anchor="end" font-size="14.5" font-weight="bold" fill="#c81414">ALTURA FIJA</text>
+<path d="M698,737 L674,694" stroke="#2b2b2b" stroke-width="1.1" fill="none" marker-end="url(#aK)"/>
+<text x="702" y="742" font-size="14" fill="#2b2b2b">base interior del mueble</text>
+<text x="300" y="776" font-size="15.5" fill="#c81414">El primer cajón queda a <tspan font-weight="bold">55 mm de altura fijo</tspan>: se mide desde la <tspan font-weight="bold">base</tspan></text>
+<text x="300" y="794" font-size="15.5" fill="#c81414"><tspan font-weight="bold">interior del mueble</tspan> hacia arriba, al <tspan font-weight="bold">centro del agujereado de la corredera</tspan>.</text>
+
+<!-- ================= CAJON SUPERIOR ================= -->
+<g>
+  <polygon points="303,488 547,488 717,369 473,369" fill="#DEDCC0" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="473,297 717,297 717,369 473,369" fill="#C9C7AC" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="303,488 303,416 473,297 473,369" fill="#D4D2B6" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="547,488 547,416 717,297 717,369" fill="#CDCBB0" stroke="#2b2b2b" stroke-width="1.4"/>
+  <rect x="295" y="390" width="260" height="100" fill="#CFCCA8" stroke="#2b2b2b" stroke-width="2"/>
+  <rect x="295" y="390" width="260" height="9" fill="#E3E0C2" stroke="#2b2b2b" stroke-width="1"/>
+</g>
+
+<!-- ================= CAJON INTERMEDIO ================= -->
+<g>
+  <polygon points="263,576 507,576 677,457 433,457" fill="#DEDCC0" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="433,385 677,385 677,457 433,457" fill="#C9C7AC" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="263,576 263,504 433,385 433,457" fill="#D4D2B6" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="507,576 507,504 677,385 677,457" fill="#CDCBB0" stroke="#2b2b2b" stroke-width="1.4"/>
+  <rect x="255" y="478" width="260" height="100" fill="#CFCCA8" stroke="#2b2b2b" stroke-width="2"/>
+  <rect x="255" y="478" width="260" height="9" fill="#E3E0C2" stroke="#2b2b2b" stroke-width="1"/>
+</g>
+
+<!-- ================= CAJON INFERIOR (abierto) ================= -->
+<g>
+  <polygon points="208,672 452,672 622,553 378,553" fill="#DEDCC0" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="378,481 622,481 622,553 378,553" fill="#C9C7AC" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="208,672 208,600 378,481 378,553" fill="#D4D2B6" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="452,672 452,600 622,481 622,553" fill="#CDCBB0" stroke="#2b2b2b" stroke-width="1.4"/>
+  <polygon points="452,644 622,525 622,533 452,652" fill="#B7BBC2" stroke="#2b2b2b" stroke-width="1.2"/>
+  <circle cx="486" cy="624" r="3.2" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1"/>
+  <circle cx="576" cy="561" r="3.2" fill="#F2F0D8" stroke="#2b2b2b" stroke-width="1"/>
+  <rect x="200" y="560" width="260" height="114" fill="#CFCCA8" stroke="#2b2b2b" stroke-width="2"/>
+  <rect x="200" y="560" width="260" height="9" fill="#E3E0C2" stroke="#2b2b2b" stroke-width="1"/>
+</g>
+
+<!-- cota 43mm sobre el frente del cajon inferior -->
+<line x1="196" y1="650.4" x2="470" y2="650.4" stroke="#0f8a38" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="200" y1="674" x2="170" y2="674" stroke="#0f8a38" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="200" y1="650.4" x2="170" y2="650.4" stroke="#0f8a38" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="184" y1="674" x2="184" y2="650.4" stroke="#0f8a38" stroke-width="2" marker-start="url(#aGs)" marker-end="url(#aG)"/>
+<path d="M184,662 L158,636 L140,636" stroke="#0f8a38" stroke-width="1.2" fill="none"/>
+<text x="132" y="642" text-anchor="end" font-size="26" font-weight="bold" fill="#0f8a38">43 mm</text>
+<text x="40" y="688" font-size="14" fill="#0f8a38">Medir desde el frente de cajón</text>
+<text x="40" y="706" font-size="14" fill="#0f8a38">hacia arriba, al centro del</text>
+<text x="40" y="724" font-size="14" fill="#0f8a38">agujereado de la corredera.</text>
+
+<!-- Punto 1 -->
+<circle cx="452" cy="648" r="4.5" fill="#c08a30" stroke="#2b2b2b" stroke-width="1.2"/>
+<path d="M452,648 L516,656" stroke="#2b2b2b" stroke-width="1.2" fill="none"/>
+<text x="520" y="661" font-size="15" fill="#1d1d1d">Punto 1</text>
+
+<!-- Etiqueta cajon inferior -->
+<path d="M190,524 L246,566" stroke="#2b2b2b" stroke-width="1.2" fill="none" marker-end="url(#aK)"/>
+<text x="40" y="522" font-size="15.5" fill="#1d1d1d">Cajón inferior (N-1)</text>
+
+<!-- ================= LLAMADAS DERECHA ================= -->
+<path d="M1002,216 L908,340" stroke="#2b2b2b" stroke-width="1.2" fill="none" marker-end="url(#aK)"/>
+<text x="1006" y="186" font-size="17" font-weight="bold" fill="#1d1d1d">Corredera de 500</text>
+<text x="1006" y="209" font-size="15" fill="#1d1d1d">Intervalo de los agujeros: <tspan font-weight="bold">307 mm</tspan></text>
+
+<path d="M1002,322 L874,446" stroke="#2b2b2b" stroke-width="1.2" fill="none" marker-end="url(#aK)"/>
+<text x="1006" y="291" font-size="17" font-weight="bold" fill="#1d1d1d">Corredera de 400</text>
+<text x="1006" y="314" font-size="15" fill="#1d1d1d">Intervalo de los agujeros: <tspan font-weight="bold">252 mm</tspan></text>
+
+<path d="M1002,418 L972,458" stroke="#c81414" stroke-width="1.2" fill="none" marker-end="url(#aR)"/>
+<text x="1006" y="386" font-size="17" font-weight="bold" fill="#c81414">Corredera del 1er cajón</text>
+<text x="1006" y="409" font-size="15" fill="#c81414">Altura fija: <tspan font-weight="bold">55 mm</tspan> desde la base</text>
+
+<!-- ================= CUADRO DE REGLAS ================= -->
+<rect x="1000" y="440" width="392" height="350" fill="#EDEBD3" stroke="#2b2b2b" stroke-width="2"/>
+<text x="1196" y="472" text-anchor="middle" font-size="18" font-weight="bold" fill="#1d1d1d">REGLAS DE MONTAJE GENERALES</text>
+<line x1="1018" y1="482" x2="1374" y2="482" stroke="#2b2b2b" stroke-width="1.2"/>
+
+<g font-size="15" fill="#1d1d1d">
+  <text x="1018" y="508">· Medir <tspan font-weight="bold">43 mm</tspan> desde el frente de cajón (hacia</text>
+  <text x="1028" y="527">arriba) al centro del agujereado de la corredera.</text>
+
+  <text x="1018" y="556" fill="#c81414">· <tspan font-weight="bold">El primer cajón queda a 55 mm de altura</tspan></text>
+  <text x="1028" y="575" fill="#c81414"><tspan font-weight="bold">fijo</tspan>, medido desde la base interior del mueble</text>
+  <text x="1028" y="594" fill="#c81414">al centro del agujereado de la corredera.</text>
+
+  <text x="1018" y="623">· El resto de los cajones, con la medida que</text>
+  <text x="1028" y="642">te indiquen.</text>
+
+  <text x="1018" y="671">· Las correderas van a <tspan font-weight="bold">30 mm hacia adentro</tspan>,</text>
+  <text x="1028" y="690">tanto la de 500 como la de 400.</text>
+
+  <text x="1018" y="719">· Intervalos de los agujeros:</text>
+  <text x="1028" y="738"><tspan font-weight="bold">252 mm</tspan> = corredera de <tspan font-weight="bold">400</tspan></text>
+  <text x="1028" y="757"><tspan font-weight="bold">307 mm</tspan> = corredera de <tspan font-weight="bold">500</tspan></text>
+</g>
+</svg>
