@@ -139,9 +139,13 @@ El visor no dibuja el modelo plano como SketchUp: lo ilumina como un render.
   el brillo que corresponde — *laca/brillante* espeja, *melamina/mate* apaga, *acero/inox/alumin*
   es metálico, *granito/mármol/cuarzo* tiene barniz, *madera/roble/nogal* lleva veta, *vidrio* es
   transparente. Cuanto mejor nombres los materiales, mejor se ve.
-- **Relieve:** las superficies lisas llevan un poro finito de melamina (a escala real, 22 cm el
-  dibujo) y las que tienen textura reciben relieve sacado de la propia imagen, así la veta se ve
-  con profundidad y no como una calcomanía.
+- **Relieve:** las superficies lisas llevan el poro de la melamina y las que tienen textura
+  reciben relieve sacado de la propia imagen, así la veta se ve con profundidad y no como una
+  calcomanía. La **melamina blanca lisa** lleva más poro que el resto: es el caso donde la luz
+  pega más pareja, y sin eso dos puertas pegadas parecen una sola plancha.
+- **Líneas de los bordes:** sobre blanco son lo único que separa una puerta de la de al lado,
+  sobre todo en el celular, donde el cálculo de rincones arranca apagado. Se pueden apagar con el
+  botón **Líneas**.
 - **Curva de exposición** de cámara de fotos: los blancos no se queman.
 
 **Si un material se ve de un color raro, el color sale del material en SketchUp, no de la luz.** El

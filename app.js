@@ -16,7 +16,7 @@ const on = (sel, ev, fn) => {
 };
 // Número de versión, visible en Ajustes. Subilo junto con el CACHE de sw.js al publicar:
 // sirve para saber de un vistazo si el navegador está corriendo la versión nueva o una vieja.
-const APP_VER = 'v15';
+const APP_VER = 'v16';
 const FACT = { mm: 1, cm: 10, m: 1000, in: 25.4 };     // unidad del archivo → mm
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nf = (n, d = 0) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -623,6 +623,14 @@ const relievePoro = mapaDeRelieve(256, (u, v) => (
   ruidoCiclico(u, v, 40, 40) * 0.6 + ruidoCiclico(u, v, 90, 90) * 0.4
 ), 1.1);
 
+/* El mismo poro, más chico, para las superficies lisas. Una melamina blanca sin foto encima es
+   el caso más difícil: la luz le pega pareja y dos puertas pegadas parecen una sola plancha.
+   Necesita bastante poro para despegarse, pero con el dibujo grande se vería como una pared
+   revocada; achicándolo queda la piel mate de la melamina. */
+const relievePoroFino = relievePoro.clone();
+relievePoroFino.repeat.set(2.6, 2.6);
+relievePoroFino.needsUpdate = true;
+
 // Veta de madera: estirada en el largo de la pieza, con líneas finas atravesadas.
 const relieveVeta = mapaDeRelieve(512, (u, v) => {
   const base = ruidoCiclico(u, v, 2, 26);
@@ -726,8 +734,15 @@ function toStandard(mat, unaCara) {
                       : new THREE.MeshStandardMaterial(datos);
   // Relieve: veta para las maderas, poro fino para el resto (el metal y el vidrio van lisos).
   if (!vidrio && ac.met < 0.5) {
-    m.normalMap = ac.veta ? relieveVeta : relievePoro;
-    m.normalScale = new THREE.Vector2(ac.veta ? 0.45 : 0.16, ac.veta ? 0.45 : 0.16);
+    // Una melamina blanca lisa, sin foto encima, es lo que peor se ve: la luz le pega pareja y
+    // dos puertas pegadas parecen una sola plancha. A esas se les carga más el poro, que es lo
+    // que les da piel y las despega entre sí. Donde hay textura el poro va suave, para no
+    // ensuciar el dibujo de la madera.
+    const liso = !map;
+    const claro = (datos.color.r + datos.color.g + datos.color.b) / 3 > 0.45;
+    m.normalMap = ac.veta ? relieveVeta : liso ? relievePoroFino : relievePoro;
+    const poro = ac.veta ? 0.45 : liso && claro ? 0.45 : liso ? 0.30 : 0.18;
+    m.normalScale = new THREE.Vector2(poro, poro);
   }
   if (vidrio) { m.opacity = Math.min(m.opacity, 0.28); m.transparent = true; m.depthWrite = false; }
   // Las caras van un poquito "atrás" para que las líneas de los bordes se dibujen por encima.
@@ -759,7 +774,10 @@ function prepareMaterials(root, ext) {
     m.userData.mats = list.map((mat) => ({ mat, color: mat.color.clone(), opacity: mat.opacity, transparent: mat.transparent, depthWrite: mat.depthWrite }));
 
     const lineGeo = new THREE.LineSegmentsGeometry().setPositions(buildEdges(m.geometry, 25).attributes.position.array);
-    const lineMat = new THREE.LineMaterial({ color: EDGE_COLOR, linewidth: 1.1, transparent: true, opacity: 0.55, resolution: lineRes.clone() });
+    // Sobre melamina blanca la línea del borde es lo único que separa una puerta de la de al
+    // lado, sobre todo en el celular, donde el cálculo de rincones arranca apagado. Antes era
+    // tan suave que el mueble parecía una plancha sola.
+    const lineMat = new THREE.LineMaterial({ color: EDGE_COLOR, linewidth: 1.35, transparent: true, opacity: 0.78, resolution: lineRes.clone() });
     lineMats.push(lineMat);
     const edges = new THREE.LineSegments2(lineGeo, lineMat);
     edges.raycast = () => {};
