@@ -99,7 +99,14 @@ tocá otra vez **Link para el cliente** para que el cliente vea la versión nuev
 
 ## Puertas y cajones: cómo salen bien
 
-Se reconocen por el **nombre del grupo en SketchUp**, igual que en Control de piezas:
+Se reconocen de dos maneras. Primero, por la **marca de apertura** que dibuja el Generador de
+Muebles: esa "V" de dos líneas que va sobre cada puerta. La parte abierta de la V apoya en la
+bisagra y la punta señala hacia dónde abre, así que de ahí sale la puerta **y** el lado correcto
+de la bisagra, sin adivinar nada. Sirve aunque los paneles no tengan nombre propio, que es lo
+normal en los muebles que arma el generador.
+
+Si el modelo no trae esas marcas, se reconocen por el **nombre del grupo en SketchUp**, igual que
+en Control de piezas:
 
 - **"Puerta…"** gira sobre la bisagra. **"Frente…"** o **"Cajón…"** sale hacia adelante.
 - Lo que diga **"fijo", "portahorno", "zócalo", "división", "divisor", "tabique"** o **"separador"**

@@ -16,7 +16,7 @@ const on = (sel, ev, fn) => {
 };
 // Número de versión, visible en Ajustes. Subilo junto con el CACHE de sw.js al publicar:
 // sirve para saber de un vistazo si el navegador está corriendo la versión nueva o una vieja.
-const APP_VER = 'v13';
+const APP_VER = 'v14';
 const FACT = { mm: 1, cm: 10, m: 1000, in: 25.4 };     // unidad del archivo → mm
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nf = (n, d = 0) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -918,26 +918,92 @@ const tieneNombreAdentro = (n) => {
    piezas con nombre propio — un despiece, donde cada tabla es su propio grupo — se entra y se
    clasifica tabla por tabla. Lo que no es puerta ni frente queda como candidato a viajar con un
    cajón (los costados, el fondo, las guías). */
+/* Marcas de apertura del Generador de Muebles.
+
+   Sobre cada puerta el generador dibuja una "V" con dos líneas. La parte abierta de la V apoya
+   en la bisagra y la punta señala hacia dónde abre: se ve clarísimo en una alacena de dos
+   puertas, donde las dos puntas se juntan en el medio y las bases quedan en los bordes de afuera,
+   que es justo donde van las bisagras.
+
+   Es la forma más confiable de encontrar las puertas: en estos modelos los paneles no tienen
+   nombre propio (son todos "SketchUp_Instance_43"), así que por nombre no hay con qué agarrarse.
+   Y de paso dice de qué lado va cada bisagra, sin tener que adivinarlo. */
+function marcasDeApertura(root) {
+  const marcas = [];
+  const tmp = new THREE.Vector3();
+  root.traverse((o) => {
+    if (!/^apertura\b/i.test(cleanName(o.name || ''))) return;
+    const pts = [];
+    o.traverse((x) => {
+      const at = x.geometry && x.geometry.attributes && x.geometry.attributes.position;
+      if (!at || x.isMesh) return;
+      x.updateWorldMatrix(true, false);
+      for (let i = 0; i < at.count; i++) pts.push(tmp.fromBufferAttribute(at, i).applyMatrix4(x.matrixWorld).clone());
+    });
+    // Cada V son cuatro puntos seguidos: la punta viene repetida y los otros dos son los
+    // extremos del borde de la bisagra.
+    for (let i = 0; i + 3 < pts.length; i += 4) {
+      const c = pts.slice(i, i + 4);
+      let punta = null; const base = [];
+      for (const p of c) {
+        const repetido = c.filter((q) => q.distanceTo(p) < 0.004).length > 1;
+        if (repetido) { if (!punta) punta = p.clone(); } else base.push(p);
+      }
+      if (!punta || base.length !== 2) continue;
+      const medioBisagra = base[0].clone().add(base[1]).multiplyScalar(0.5);
+      marcas.push({
+        punta,
+        bisagra: medioBisagra,
+        eje: base[1].clone().sub(base[0]).normalize(),
+        centro: medioBisagra.clone().add(punta).multiplyScalar(0.5),
+        largo: Math.max(base[0].distanceTo(base[1]), punta.distanceTo(medioBisagra)),
+      });
+    }
+  });
+  return marcas;
+}
+
 function extractAperturas(root) {
-  const hallados = [], sueltas = [];
+  const hallados = [], sueltas = [], piezas = [];
+  // Un grupo que adentro tiene otros grupos con piezas es un mueble, no una pieza: hay que entrar.
+  // Un módulo se llama "15-1 PUERTA" y no es una puerta; la puerta está adentro.
+  const tieneSubGrupos = (n) => n.children.some((c) => !c.userData.isEdges && !c.isMesh && hasMesh(c));
   const walk = (node, depth) => {
     for (const c of node.children) {
       if (c.userData.isEdges || !hasMesh(c)) continue;
       const nombre = usable(c.name) ? cleanName(c.name) : '';
-      const adentro = depth < 8 && tieneNombreAdentro(c);
-      if (nombre && !adentro) {
-        const box = new THREE.Box3().setFromObject(c);
-        if (box.isEmpty()) continue;
-        const kind = tipoApertura(nombre);
-        if (kind && esTabla(box.getSize(new THREE.Vector3()))) hallados.push({ name: nombre, node: c, box, kind });
-        else sueltas.push({ name: nombre, node: c, box });
-        continue;
-      }
-      if (adentro) walk(c, depth + 1);
+      const box = new THREE.Box3().setFromObject(c);
+      if (box.isEmpty()) continue;
+      const tabla = esTabla(box.getSize(new THREE.Vector3()));
+      const kind = nombre ? tipoApertura(nombre) : '';
+      // Una puerta con nombre y forma de tabla se toma entera, aunque adentro tenga la manija.
+      if (kind && tabla) { hallados.push({ name: nombre, node: c, box, kind }); continue; }
+      if (depth < 8 && tieneSubGrupos(c)) { walk(c, depth + 1); continue; }
+      if (nombre) { sueltas.push({ name: nombre, node: c, box }); piezas.push({ name: nombre, node: c, box }); }
+      else piezas.push({ name: '', node: c, box });   // sin nombre: igual puede ser una puerta
     }
   };
   root.updateMatrixWorld(true);
   walk(root, 0);
+
+  /* Cada marca busca el panel que tiene debajo: el más cercano a su centro, del tamaño de la
+     marca. Ese panel es la puerta, y la marca le dice dónde va la bisagra. */
+  marcasDeApertura(root).forEach((m) => {
+    let mejor = null, mejorD = Infinity;
+    for (const p of piezas) {
+      if (hallados.some((h) => h.node === p.node)) continue;
+      const s = p.box.getSize(new THREE.Vector3());
+      if (!esTabla(s)) continue;
+      const largo = Math.max(s.x, s.y, s.z);
+      if (largo < m.largo * 0.7 || largo > m.largo * 1.8) continue;   // no es del tamaño de la marca
+      const d = p.box.getCenter(new THREE.Vector3()).distanceTo(m.centro);
+      if (d < mejorD) { mejorD = d; mejor = p; }
+    }
+    if (!mejor || mejorD > 0.09) return;   // la marca va apoyada sobre la puerta, no lejos
+    hallados.push({ name: mejor.name || 'Puerta', node: mejor.node, box: mejor.box, kind: 'puerta', marca: m });
+    const i = sueltas.findIndex((s) => s.node === mejor.node);
+    if (i >= 0) sueltas.splice(i, 1);
+  });
   // Nombre + número de repetición: el mismo modelo da siempre la misma clave, así el sentido
   // que se guardó la vez pasada vuelve a caer en la misma puerta.
   const vistos = new Map();
@@ -1053,6 +1119,20 @@ function configurarAperturas() {
     const izqV = new THREE.Vector3().crossVectors(out, UP_V);   // izquierda del que mira la puerta de frente
     let lado = cfg && (cfg.lado === 'izq' || cfg.lado === 'der' || cfg.lado === 'arriba' || cfg.lado === 'abajo') ? cfg.lado : '';
     a.auto = !lado;
+
+    // Si la puerta trae su marca dibujada, la bisagra sale de ahí y no hay nada que adivinar.
+    if (!lado && a.marca) {
+      a.hinge = a.marca.bisagra.clone();
+      a.axis = a.marca.eje.clone();
+      const haciaLaPunta = a.marca.punta.clone().sub(a.marca.bisagra);
+      a.lado = Math.abs(a.marca.eje.y) > 0.7
+        ? (haciaLaPunta.dot(izqV) >= 0 ? 'der' : 'izq')   // la bisagra está del lado opuesto a la punta
+        : (haciaLaPunta.y <= 0 ? 'arriba' : 'abajo');
+      const prueba = a.marca.punta.clone().sub(a.hinge).applyAxisAngle(a.axis, Math.PI / 2).add(a.hinge).sub(a.marca.punta);
+      a.angle = (prueba.dot(out) >= 0 ? 1 : -1) * Math.PI / 2;
+      return;
+    }
+
     if (!lado) {
       let relW = centro.getComponent(w) - ref.getComponent(w);
       if (Math.abs(relW) < 1e-6) relW = centro.getComponent(w) - centroModelo.getComponent(w);
@@ -1083,6 +1163,7 @@ if (/[?&]debug=1/.test(location.search)) {
   window.__pdPuertas = () => ({
     aperturas: aperturas.map((a) => `${a.name} [${a.kind}] ${LADOS[a.lado] || '?'}${a.auto ? ' (auto)' : ''}`),
     seguidores: seguidores.map((s) => `${cleanName(s.node.name)} → ${s.follow.name}`),
+    conMarca: aperturas.filter((a) => a.marca).length,
     sinUsar: candidatas.filter((c) => !seguidores.some((s) => s.node === c.node)).map((c) => c.name),
   });
   // Perillas de la luz y los materiales, para probar cambios sin recargar.
@@ -1097,9 +1178,11 @@ if (/[?&]debug=1/.test(location.search)) {
   };
   // Dónde quedó cada pieza ahora mismo, para comparar cerrado contra abierto.
   window.__pdDonde = () => {
-    const v = new THREE.Vector3(), m = {};
-    aperturas.forEach((a) => { a.node.getWorldPosition(v); m['A:' + a.key] = v.toArray().map((x) => +x.toFixed(4)); });
-    seguidores.forEach((s, i) => { s.node.getWorldPosition(v); m['S' + i + ':' + cleanName(s.node.name) + '→' + s.follow.key] = v.toArray().map((x) => +x.toFixed(4)); });
+    const m = {};
+    modelRoot.updateMatrixWorld(true);
+    const centro = (n) => new THREE.Box3().setFromObject(n).getCenter(new THREE.Vector3()).toArray().map((x) => +x.toFixed(4));
+    aperturas.forEach((a, i) => { m['A' + i + ':' + a.key] = centro(a.node); });
+    seguidores.forEach((s, i) => { m['S' + i + ':' + cleanName(s.node.name) + '→' + s.follow.key] = centro(s.node); });
     return m;
   };
 }
