@@ -189,18 +189,28 @@ En el menú **Extensiones → Presentación de Diseños** también están:
 - Si un modelo pesa mucho: purgá los componentes que no uses (Ventana → Información del modelo →
   Estadísticas → Purgar) y achicá las texturas grandes. Eso también achica el archivo del cliente.
 
+## Dónde vive la página
+
+La dirección buena es **https://campimapas-maker.github.io/presentacion-disenos/** (GitHub Pages:
+gratis, sin límite de publicaciones). El repositorio es
+[campimapas-maker/presentacion-disenos](https://github.com/campimapas-maker/presentacion-disenos).
+
+La vieja, `presentacion-disenos-campi.netlify.app`, **sigue andando**: los links que ya mandaste
+desde ahí funcionan igual, pero quedaron en una versión anterior. Netlify tiene los deploys
+pausados por los créditos del plan gratis.
+
 ## Publicar una versión nueva de la página
 
-Subí el número de `CACHE` en [sw.js](sw.js) y el de `APP_VER` en [app.js](app.js), volvé a armar
-`presentacion-disenos-web.zip` y arrastralo en Netlify → proyecto **presentacion-disenos-campi** →
-**Deploys**. En el zip va solo la página: no metas los .sql, la carpeta `Diseños` ni los .skp.
+Subí el número de `CACHE` en [sw.js](sw.js) y el de `APP_VER` en [app.js](app.js), y subí los
+archivos al repositorio (`git push`). GitHub Pages se actualiza solo en un minuto. Va solo la
+página: no metas los .sql, la carpeta `Diseños` ni los .skp.
 
 La página **se actualiza sola**: cuando encuentra una versión nueva se recarga sin que hagas nada
 (revisa al abrir, al volver a la pestaña y cada diez minutos). Ya no hace falta Ctrl+F5. Para saber
 qué versión estás viendo: **Ajustes**, abajo de todo dice *Versión de la página*.
 ## Dejarla como app en el teléfono
 
-Abrí https://presentacion-disenos-campi.netlify.app y tocá **Instalar la app**, arriba a la derecha.
+Abrí https://campimapas-maker.github.io/presentacion-disenos/ y tocá **Instalar la app**, arriba a la derecha.
 Queda el ícono en la pantalla de inicio y se abre sin barra del navegador, como cualquier otra app.
 Sigue siendo la misma página: se actualiza sola y las propuestas son las mismas.
 
