@@ -16,7 +16,7 @@ const on = (sel, ev, fn) => {
 };
 // Número de versión, visible en Ajustes. Subilo junto con el CACHE de sw.js al publicar:
 // sirve para saber de un vistazo si el navegador está corriendo la versión nueva o una vieja.
-const APP_VER = 'v14';
+const APP_VER = 'v15';
 const FACT = { mm: 1, cm: 10, m: 1000, in: 25.4 };     // unidad del archivo → mm
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nf = (n, d = 0) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -933,6 +933,9 @@ function marcasDeApertura(root) {
   const tmp = new THREE.Vector3();
   root.traverse((o) => {
     if (!/^apertura\b/i.test(cleanName(o.name || ''))) return;
+    // La marca es una indicación de taller: sirve para saber de qué lado abre, pero en la
+    // presentación al cliente afea. Se lee y se esconde.
+    o.visible = false;
     const pts = [];
     o.traverse((x) => {
       const at = x.geometry && x.geometry.attributes && x.geometry.attributes.position;
@@ -990,16 +993,18 @@ function extractAperturas(root) {
      marca. Ese panel es la puerta, y la marca le dice dónde va la bisagra. */
   marcasDeApertura(root).forEach((m) => {
     let mejor = null, mejorD = Infinity;
-    for (const p of piezas) {
-      if (hallados.some((h) => h.node === p.node)) continue;
+    const mirar = (p) => {
       const s = p.box.getSize(new THREE.Vector3());
-      if (!esTabla(s)) continue;
+      if (!esTabla(s)) return;
       const largo = Math.max(s.x, s.y, s.z);
-      if (largo < m.largo * 0.7 || largo > m.largo * 1.8) continue;   // no es del tamaño de la marca
+      if (largo < m.largo * 0.7 || largo > m.largo * 1.8) return;   // no es del tamaño de la marca
       const d = p.box.getCenter(new THREE.Vector3()).distanceTo(m.centro);
       if (d < mejorD) { mejorD = d; mejor = p; }
-    }
+    };
+    hallados.forEach(mirar);   // la puerta puede estar ya encontrada por su nombre
+    piezas.forEach(mirar);
     if (!mejor || mejorD > 0.09) return;   // la marca va apoyada sobre la puerta, no lejos
+    if (hallados.includes(mejor)) { mejor.kind = 'puerta'; mejor.marca = m; return; }
     hallados.push({ name: mejor.name || 'Puerta', node: mejor.node, box: mejor.box, kind: 'puerta', marca: m });
     const i = sueltas.findIndex((s) => s.node === mejor.node);
     if (i >= 0) sueltas.splice(i, 1);
