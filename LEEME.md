@@ -30,7 +30,8 @@ esta es para vender.
    abajo están los campos separados: **Modelo**, **Texturas** y **Cotas**, como en Control de
    piezas, para cargar los archivos uno por uno.
 5. Cuando esté como querés, **Link para el cliente**: te copia el link al portapapeles, listo
-   para pegar en el WhatsApp. (También está el botón **Enviar por WhatsApp**, que abre el chat
+   para pegar en el WhatsApp. El cartel te dice **de qué propuesta es el link** que copió; si
+   alguna vez no lo pudo copiar solo, te avisa y tenés el botón **Copiar link**. (También está el botón **Enviar por WhatsApp**, que abre el chat
    con el mensaje armado.)
 
 ### Sin cuenta y sin contraseña

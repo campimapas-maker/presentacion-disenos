@@ -16,7 +16,7 @@ const on = (sel, ev, fn) => {
 };
 // Número de versión, visible en Ajustes. Subilo junto con el CACHE de sw.js al publicar:
 // sirve para saber de un vistazo si el navegador está corriendo la versión nueva o una vieja.
-const APP_VER = 'v17';
+const APP_VER = 'v18';
 const FACT = { mm: 1, cm: 10, m: 1000, in: 25.4 };     // unidad del archivo → mm
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nf = (n, d = 0) => Number(n).toLocaleString('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -1206,6 +1206,8 @@ if (/[?&]debug=1/.test(location.search)) {
     conMarca: aperturas.filter((a) => a.marca).length,
     sinUsar: candidatas.filter((c) => !seguidores.some((s) => s.node === c.node)).map((c) => c.name),
   });
+  // Qué propuesta está abierta y qué link le toca.
+  window.__pdProy = () => (proj ? { id: proj.id, nombre: proj.nombre, cloud: !!proj.cloud, sucio: !!proj.sucio, link: clientLink(proj.id) } : null);
   // Perillas de la luz y los materiales, para probar cambios sin recargar.
   window.__pdLuz = () => ({ scene, renderer, camera, key, fill, sun, pasadaFinal, ssaoPass, modelRoot, THREE, requestRender });
   // En qué punto de la pantalla cae cada puerta (para probar el doble clic).
@@ -2225,14 +2227,37 @@ on('#btnArchivo', 'click', async () => {
 
 const dlgShare = $('#dlgShare');
 
-async function mostrarLink(link, aviso) {
+/* Copiar al portapapeles.
+
+   El navegador solo deja tocar el portapapeles mientras el toque del botón sigue "vivo". Si se
+   espera a que termine la subida, ya no deja, y antes eso se tragaba en silencio: el link nuevo
+   no se copiaba y al pegar salía el anterior, el de la propuesta de antes. Por eso ahora se
+   copia antes de subir, hay un segundo método de respaldo, y si los dos fallan se avisa. */
+async function copiar(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch (e) { /* se prueba abajo */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+
+async function mostrarLink(link, aviso, yaCopiado) {
   $('#shareTitulo').textContent = 'Link para el cliente';
   $('#shareOk').hidden = false;
   $('#shareFalta').hidden = true;
   $('#shareUrl').value = link;
-  let copiado = false;
-  try { await navigator.clipboard.writeText(link); copiado = true; } catch (e) { /* sin permiso */ }
-  $('#shareMsg').textContent = (copiado ? 'Link copiado: pegalo y mandalo. ' : '') + aviso;
+  const copiado = yaCopiado === undefined ? await copiar(link) : yaCopiado;
+  // El nombre va en el cartel a propósito: si alguna vez se copia el que no era, se ve de una.
+  $('#shareMsg').textContent = copiado
+    ? `Link copiado, el de "${proj.nombre}": pegalo y mandalo. ${aviso}`
+    : `Ojo: no se pudo copiar solo. Tocá "Copiar link" acá abajo, si no vas a pegar el link anterior. ${aviso}`;
   if (!dlgShare.open) dlgShare.showModal();
   if (!copiado) $('#shareUrl').select();
 }
@@ -2248,13 +2273,15 @@ function avisarFalla(msg) {
 // Genera (si hace falta) y copia el link. No pide cuenta ni contraseña: nunca.
 async function darLink() {
   const link = clientLink(proj.id);
+  // Se copia ahora, con el toque del botón todavía vigente, y no después de subir.
+  const copiado = await copiar(link);
   if (proj.cloud && !proj.sucio) {
-    await mostrarLink(link, 'El cliente lo abre y solo mira: no puede cambiar nada.');
+    await mostrarLink(link, 'El cliente lo abre y solo mira: no puede cambiar nada.', copiado);
     return true;
   }
   try {
     await publish(proj);
-    await mostrarLink(link, 'El cliente ve la versión de ahora, y solo mira.');
+    await mostrarLink(link, 'El cliente ve la versión de ahora, y solo mira.', copiado);
     return true;
   } catch (err) {
     console.error(err);
@@ -2272,8 +2299,8 @@ on('#shareArchivo', 'click', () => { dlgShare.close(); $('#btnArchivo').click();
 on('#shareClose2', 'click', () => dlgShare.close());
 on('#shareClose', 'click', () => dlgShare.close());
 on('#shareCopy', 'click', async () => {
-  try { await navigator.clipboard.writeText($('#shareUrl').value); toast('Link copiado.'); }
-  catch (e) { $('#shareUrl').select(); toast('Copialo con Ctrl+C.'); }
+  if (await copiar($('#shareUrl').value)) toast('Link copiado.');
+  else { $('#shareUrl').select(); toast('No se pudo copiar solo: copialo con Ctrl+C.'); }
 });
 on('#shareWa', 'click', () => {
   const t = `${proj.nombre}${proj.cliente ? ' — ' + proj.cliente : ''}\nMirá el diseño en 3D con las medidas:\n${$('#shareUrl').value}`;

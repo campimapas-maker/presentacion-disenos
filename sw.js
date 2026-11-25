@@ -3,7 +3,7 @@
 // Primero se pide a internet y recién si no hay conexión se usa la copia guardada. Al revés
 // (copia primero) el celular se quedaba con una versión vieja mezclada con una nueva y la página
 // dejaba de funcionar. Así, lo que se publica se ve siempre al recargar.
-const CACHE = 'presentacion-disenos-v17';
+const CACHE = 'presentacion-disenos-v18';
 const ASSETS = [
   './', 'index.html', 'style.css', 'app.js', 'config.js', 'manifest.webmanifest',
   'icon-192.png', 'icon-512.png', 'apple-touch-icon.png',
